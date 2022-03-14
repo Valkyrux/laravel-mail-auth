@@ -3,30 +3,43 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <form>
+      <div v-if="success==true" class="alert alert-success" role="alert">
+        Messaggio inviato correttamente
+      </div>
+      
+      <form @submit.prevent="postMessage()">
         <div class="mb-3">
-            <label for="inputName" class="form-label">Nome</label>
-          <input type="text" class="form-control" id="inputName" aria-describedby="nameHelp">
-          <div id="nameHelp" class="form-text">Dimmi come ti chiami</div>
+          <label for="inputName" class="form-label">Nome</label>
+          <input v-model="name" type="text" class="form-control" id="inputName" aria-describedby="nameHelp">
+          <div class="mt-1" v-if="errors.name">
+            <div v-for="error, index in errors.name" class="alert alert-danger" role="alert" :key="'name-err-'  + index">
+              {{error}} 
+            </div>
+          </div>
         </div>
         
         <div class="mb-3">
           <label for="inputEmail" class="form-label">Indirizzo e-mail</label>
-          <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
+          <input v-model="email" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
           <div id="emailHelp" class="form-text">Questo indirizzo non verr&agrave; condiviso con nessun altro.</div>
+          <div class="mt-1" v-if="errors.email">
+            <div v-for="error, index in errors.email" class="alert alert-danger" role="alert" :key="'email-err-'  + index">
+              {{error}} 
+            </div>
+          </div>
         </div>
           
         <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-              
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1">
-          <label class="form-check-label" for="exampleCheck1">Check me out</label>
+          <label for="inputText" class="form-label">Messaggio</label>
+          <textarea v-model="message  " class="form-control" id="inputText" cols="20" rows="10"></textarea>
+          <div class="mt-1" v-if="errors.message">
+            <div v-for="error, index in errors.message" class="alert alert-danger" role="alert" :key="'message-err-'  + index">
+              {{error}} 
+            </div>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Invia</button>
       </form>
     </div>
   </div>
@@ -35,8 +48,43 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     name: 'Contact',
+    data() {
+      return {
+        name: null,
+        email: null,
+        message: null,
+        success: null,
+        errors: [],
+      }
+    },
+    methods: {
+      postMessage() {
+        const vueThis = this;
+        axios.post('api/contact',
+          {
+            name: vueThis.name,
+            email: vueThis.email,
+            message: vueThis.message,
+          }).then(response => {
+            if (response.data.success) {
+             vueThis.success = true;
+             vueThis.name = null;
+             vueThis.email = null;
+             vueThis.message = null;
+             vueThis.errors = [];
+            } else {
+             vueThis.success = false;
+             vueThis.errors = response.data.errors;
+             console.log(response.data);
+            }
+          })
+          .catch(error => {console.log(error.response.data)});
+      },
+    }
 }
 </script>
 
