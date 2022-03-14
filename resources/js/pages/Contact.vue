@@ -39,7 +39,7 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Invia</button>
+        <button type="submit" class="btn text-light btn-primary" :class="sendingEmail ? 'disabled': ''">{{sendingEmail ? 'Sto inviando' : 'Invia'}}</button>
       </form>
     </div>
   </div>
@@ -57,31 +57,39 @@ export default {
         name: null,
         email: null,
         message: null,
-        success: null,
+        success: false,
         errors: [],
+        sendingEmail: false,
       }
     },
     methods: {
       postMessage() {
         const vueThis = this;
-        axios.post('api/contact',
-          {
-            name: vueThis.name,
-            email: vueThis.email,
-            message: vueThis.message,
-          }).then(response => {
-            if (response.data.success) {
-             vueThis.success = true;
-             vueThis.name = null;
-             vueThis.email = null;
-             vueThis.message = null;
-             vueThis.errors = [];
+        this.success = false;
+        if (!this.sendingEmail) {
+          this.sendingEmail = true;
+          axios.post('api/contact',
+            {
+              name: vueThis.name,
+              email: vueThis.email,
+              message: vueThis.message,
+            }).then(response => {
+              vueThis.sendingEmail = false;
+              if (response.data.success) {
+              vueThis.success = true;
+              vueThis.name = null;
+              vueThis.email = null;
+              vueThis.message = null;
+              vueThis.errors = [];
             } else {
-             vueThis.success = false;
-             vueThis.errors = response.data.errors;
+              vueThis.sendingEmail = false;
+              vueThis.success = false;
+              vueThis.errors = response.data.errors;
             }
           })
           .catch(error => {console.log(error.response.data)});
+        }
+        
       },
     }
 }
