@@ -79,7 +79,6 @@ export default {
             } else {
              vueThis.success = false;
              vueThis.errors = response.data.errors;
-             console.log(response.data);
             }
           })
           .catch(error => {console.log(error.response.data)});
