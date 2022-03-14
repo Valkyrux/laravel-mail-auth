@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
 Route::middleware('auth')
@@ -28,3 +24,8 @@ Route::middleware('auth')
             Route::get('/', 'Admin\HomeController@index');
         }
     );
+
+
+Route::get('/{any?}', function () {
+    return view('guests.home');
+})->where('any', '.*');

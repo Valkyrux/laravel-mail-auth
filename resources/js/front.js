@@ -19,7 +19,10 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+import Vue from 'vue';
+import App from './views/App.vue';
+import VueRouter from 'vue-router';
+Vue.use(VueRouter);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -31,24 +34,26 @@ import About from './pages/About.vue'
 import Contact from './pages/Contact.vue'
 import Home from './pages/Home.vue'
 
-const router = [
-    {
-        path: '/',
-        name: 'home',
-        component: 'Home',
-    },
-    {
-        path: '/contact',
-        name: 'contact',
-        component: 'Contact',
-    },
-    {
-        path: '/about',
-        name: 'about',
-        component: 'About',
-    },
-];
-
+const router = new VueRouter({
+    mode: 'history',
+    routes: [
+        {
+            path: '/',
+            name: 'home',
+            component: Home,
+        },
+        {
+            path: '/contact',
+            name: 'contact',
+            component: Contact,
+        },
+        {
+            path: '/about',
+            name: 'about',
+            component: About,
+        },
+    ]
+});
 
 const app = new Vue({
     el: '#app',
